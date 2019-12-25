@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.edu.mapper.GoodsMapper">
+
+<resultMap id="goodsPojoResultMap" type="goodsPojo">
+    <id column="gid" property="gid"></id>
+    <result property="gname" column="gname"></result>
+    <result property="gimage" column="gimage"></result>
+    <result property="gprice" column="gprice"></result>
+    <result property="gtype" column="gtype"></result>
+    <result property="gdesc" column="gdesc"></result>
+    <result property="gdiscount" column="gdiscount"></result>
+    <result property="isdelete" column="isdelete"></result>
+    <result property="glabel" column="glabel"></result>
+    <result property="gsex" column="gsex"></result>
+
+    <association property="goodsType" javaType="goodsTypePojo">
+  <id property="tid" column="tid"></id>
+        <result column="tname" property="tname"></result>
+    </association>
+</resultMap>
+
+    <select id="queryGoodsByPojo" resultMap="goodsPojoResultMap">
+  select  gid,gname,gimage,gprice,gtype,gdesc,gdiscount,isdelete,glabel,gsex,tid,tname
+  FROM shop_goods g left join shop_goods_type t on g.gtype=t.tid
+  where isdelete = 0
+
+  <if test="null !=gtype and -1!=gtype">
+  and gtype =#{gtype}
+  </if>
+  <if test="null !=pricemin and -1!= pricemin">
+  and gprice &gt;= #{pricemin}
+  </if>
+  <if test="null !=pricemax and -1!=pricemax">
+      and gprice &lt;= #{pricemax}
+  </if>
+
+  <if test="null !=glabel and -1 !=glabel">
+      and  glabel = #{glabel}
+  </if>
+
+  <if test=" null!=gsex and -1!=gsex">
+      and gsex = #{gsex}
+  </if>
+
+
+    </select>
+
+    <!--根据商品查id-->
+    <select id="queryGoodsById" resultMap="goodsPojoResultMap">
+    select  gid,gname,gimage,gprice,gtype,gdesc,gdiscount,isdelete,glabel,gsex,tid,tname
+    FROM shop_goods g left join shop_goods_type t on g.gtype=t.tid
+    where isdelete = 0 and gid=#{gid}
+    </select>
+</mapper>

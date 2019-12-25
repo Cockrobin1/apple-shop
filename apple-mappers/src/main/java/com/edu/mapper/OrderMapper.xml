@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.edu.mapper.OrderMapper">
+
+<insert id="createOrder" >
+
+   insert  into shop_order(oid,aid,addressId,ostatus,odate,ototal)
+   values (#{oid},#{aid},#{addressId},#{ostatus},now(),#{ototal})
+
+</insert>
+
+
+
+   <!--保存订单详情-->
+   <insert id="createOrderDetails">
+
+      insert into shop_order_detail(odid,oid,gid,odprice,odnumber)
+      values
+      <foreach collection="list" separator="," item="detail">
+         (#{detail.odid},#{detail.oid},#{detail.goodsPojo.gid},#{detail.odprice},#{detail.odnumber})
+      </foreach>
+
+   </insert>
+
+   <select id="createDetail"  resultType="OrderPojo">
+      select oid,aid,addressId,ostatus,odate,ototal from shop_order where aid=#{aid}
+
+   </select>
+
+   <resultMap id="ReadUser" type="orderPojo">
+      <id column="oid" property="oid"></id>
+      <result column="aid" property="aid"></result>
+      <result column="addressId" property="addressId"></result>
+      <result column="ostatus" property="ostatus"></result>
+      <result column="odate" property="odate"></result>
+      <result column="ototal" property="ototal"></result>
+   <association property="customer"  javaType="customerPojo">
+      <id column="aid" property="aid"></id>
+      <result column="aname" property="aname"></result>
+      <result column="apass" property="apass"></result>
+   </association>
+   </resultMap>
+
+   <select id="getUser" resultMap="ReadUser">
+  select  oid,aid,addressId,ostatus,odate,ototal,aid,aname,apass
+  FROM shop_order so left join shop_customer sc on so.aid=sc.aid
+   </select>
+
+   <!--改变支付状态-->
+   <update id="cancelOrder">
+      update  shop_order set  ostatus=4 where oid=#{oid}
+   </update>
+    <!--已经支付了-->
+   <update id="apaySuccess">
+        update shop_order set ostatus=2 where oid = #{oid}
+    </update>
+</mapper>
