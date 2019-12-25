@@ -10,7 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
-
+//非常的美味
 @Controller
 public class GoodsController {
     @Autowired
